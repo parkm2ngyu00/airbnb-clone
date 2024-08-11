@@ -1,4 +1,6 @@
 from django.db import models
+from users.models import User
+from django.conf import settings
 
 class House(models.Model):
     
@@ -15,6 +17,7 @@ class House(models.Model):
         default=True,
         help_text="Does this house allow pets?",
     )
+    owner = models.ForeignKey("users.User", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
