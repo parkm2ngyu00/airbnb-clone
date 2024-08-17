@@ -48,4 +48,4 @@ jobs:
         context: ./backend
         file: ./backend/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/leafy-backend:${{ github.sha }}  
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-backend:${{ github.sha }}  
