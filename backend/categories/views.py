@@ -1,12 +1,8 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from .models import Category
+from .serializers import CategorySerializer
 
-@api_view()
-def categories(request):
-    return Response(
-        {
-            "ok": True,
-            "categories": Category.objects.all()
-        }
-    )
+class CategoryViewSet(ModelViewSet):
+
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
