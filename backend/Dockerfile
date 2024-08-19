@@ -1,5 +1,3 @@
-# Multistage build
-
 # Build stage
 FROM python:3.9-alpine AS builder
 
@@ -12,7 +10,7 @@ RUN apk add --no-cache gcc musl-dev linux-headers
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip && \
-    pip install --user -r requirements.txt
+    pip install -r requirements.txt
 
 # Final stage
 FROM python:3.9-alpine
@@ -24,20 +22,15 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
-# Create a non-root user
-RUN adduser --disabled-password --no-create-home appuser
+# Install runtime dependencies
+RUN apk add --no-cache libpq
 
 # Copy Python dependencies from builder stage
-COPY --from=builder /root/.local /home/appuser/.local
+COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy project files
-COPY --chown=appuser:appuser . .
-
-# Set PATH to include user's local bin
-ENV PATH=/home/appuser/.local/bin:$PATH
-
-# Switch to non-root user
-USER appuser
+COPY . .
 
 # Expose port
 EXPOSE 8000
