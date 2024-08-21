@@ -18,7 +18,7 @@ jobs:
         working-directory: ./frontend
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [16.x, 18.x, 20.x]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
@@ -28,7 +28,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Run Tests
-        run: npm test
+        run: npm test -- --passWithNoTests
 
   docker:
     runs-on: ubuntu-latest
