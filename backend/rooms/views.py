@@ -10,6 +10,10 @@ from django.db import transaction
 from reviews.serializer import ReviewSerializer
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django.utils import timezone
+from bookings.models import Booking
+from bookings.serializers import PublicBookingSerializer, CreateRoomBookingSerializer
+
 
 class Rooms(APIView):
 
@@ -178,3 +182,39 @@ class AmenityDetail(APIView):
         amenity = self.get_object(pk)
         amenity.delete()
         return Response(HTTP_204_NO_CONTENT, status=HTTP_204_NO_CONTENT)
+
+
+class RoomBookings(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except:
+            raise NotFound
+
+    def get(self, request, pk):
+        room = self.get_object(pk)
+        now = timezone.localtime(timezone.now()).date()
+        bookings = Booking.objects.filter(
+            room=room,
+            kind=Booking.BookingKindChoices.ROOM,
+            check_in__gt=now,
+        )
+        serializer = PublicBookingSerializer(bookings, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request, pk):
+        room = self.get_object(pk=pk)
+        serializer = CreateRoomBookingSerializer(data=request.data)
+        if serializer.is_valid():
+            booking = serializer.save(
+                room=room,
+                user=request.user,
+                kind=Booking.BookingKindChoices.ROOM
+            )
+            serializer = PublicBookingSerializer(booking)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
