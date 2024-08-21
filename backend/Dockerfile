@@ -35,6 +35,10 @@ COPY . .
 # Expose port
 EXPOSE 8000
 
+# Add argument for SECRET_KEY
+ARG SECRET_KEY
+ENV SECRET_KEY=$SECRET_KEY
+
 # Run the application
 CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
 
