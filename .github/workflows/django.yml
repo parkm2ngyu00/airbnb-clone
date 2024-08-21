@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
 
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,6 +15,8 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: ['3.9', '3.10', '3.11', '3.12']
+    env:
+      SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -33,6 +36,8 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main'
+    env:
+      SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
     steps:
     - uses: actions/checkout@v4
     - name: Set up Docker Buildx
@@ -50,3 +55,5 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/airbnb-backend:${{ github.sha }}
+        build-args: |
+          SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
