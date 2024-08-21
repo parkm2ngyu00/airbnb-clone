@@ -84,6 +84,8 @@ class RoomDetail(APIView):
     
 
 class RoomReviews(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
     
     def get_object(self, pk):
         try:
@@ -103,6 +105,13 @@ class RoomReviews(APIView):
         room = self.get_object(pk=pk)
         serializer = ReviewSerializer(room.reviews.all()[start:end], many=True)
         return Response(serializer.data)
+
+    def post(self, request, pk):
+        serialzer = ReviewSerializer(data=request.data)
+        if serialzer.is_valid():
+            review = serialzer.save(user=request.user, room=self.get_object(pk))
+            serialzer = ReviewSerializer(review)
+            return Response(serialzer.data)
 
 
 class RoomPhotos(APIView):
