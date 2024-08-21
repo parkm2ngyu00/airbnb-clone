@@ -9,7 +9,6 @@ class TinyUserSerializer(ModelSerializer):
         fields = ("name", "avatar", "username")
 
 
-
 class PrivateUserSerializer(ModelSerializer):
 
     class Meta:
