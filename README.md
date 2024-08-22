@@ -1,8 +1,8 @@
 # airbnb-clone
 
 ## 사용 기술
-- FrontEnd : React
-- BackEnd : Django
+- FrontEnd : React, React Query, Chakra UI
+- BackEnd : Django, Django Rest Framework
 - Infra : Docker, Github Actions
 
 ## 브랜치 전략
