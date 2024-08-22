@@ -52,3 +52,10 @@ export const getRoom = async ({ queryKey }: QueryFunctionContext) => {
     throw error;
   }
 };
+
+export const getRoomReviews = ({ queryKey }: QueryFunctionContext) => {
+  const [_, roomPk] = queryKey;
+  return instance
+    .get(`rooms/${roomPk}/reviews`)
+    .then((response) => response.data);
+};
