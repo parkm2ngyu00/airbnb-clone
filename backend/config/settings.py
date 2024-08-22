@@ -33,6 +33,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    "http://127.0.0.1:3000",
+]
+
 
 # Application definition
 SYSTEM_APPS = [
@@ -46,7 +51,8 @@ SYSTEM_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 CUSTOM_APPS = [
@@ -72,6 +78,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -158,9 +166,6 @@ PAGE_SIZE = 3
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "config.authentication.TrustMeBroAuthentication",
-        'rest_framework.authentication.TokenAuthentication',
         "config.authentication.JWTAuthentication",
     ]
 }

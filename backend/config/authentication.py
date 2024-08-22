@@ -22,19 +22,38 @@ class TrustMeBroAuthentication(BaseAuthentication):
 class JWTAuthentication(BaseAuthentication):
     
     def authenticate(self, request):
-        token = request.headers.get("Jwt")
-        if not token:
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
             return None
-        decoded = jwt.decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=["HS256"],
-        )
-        pk = decoded.get("pk")
-        if not pk:
-            raise AuthenticationFailed("Invalid Token")
+        
         try:
-            user = User.objects.get(pk=pk)
+            # Check for 'Bearer ' prefix and remove it
+            auth_parts = auth_header.split()
+            if len(auth_parts) != 2 or auth_parts[0].lower() != "bearer":
+                raise AuthenticationFailed("Invalid token format")
+            
+            token = auth_parts[1]
+            
+            # Decode the token
+            payload = jwt.decode(
+                token,
+                settings.SECRET_KEY,
+                algorithms=["HS256"],
+            )
+            
+            # Get user from payload
+            user_id = payload.get("pk")
+            if not user_id:
+                raise AuthenticationFailed("Invalid token payload")
+            
+            user = User.objects.get(pk=user_id)
             return (user, None)
+        
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed("Token has expired")
+        except jwt.DecodeError:
+            raise AuthenticationFailed("Invalid token")
         except User.DoesNotExist:
-            raise AuthenticationFailed("User Not Found")
+            raise AuthenticationFailed("User not found")
+        except Exception as e:
+            raise AuthenticationFailed(f"Authentication failed: {str(e)}")

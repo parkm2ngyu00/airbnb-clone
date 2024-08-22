@@ -67,5 +67,5 @@ class RoomDetailSerializer(serializers.ModelSerializer):
         request = self.context['request']
         return Wishlist.objects.filter(
             user=request.user,
-            rooms_pk=room.pk,
+            rooms=room
         ).exists()
