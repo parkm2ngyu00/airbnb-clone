@@ -9,12 +9,21 @@ import {
   LightMode,
   useColorMode,
   useColorModeValue,
+  Avatar,
+  useToast,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import LoginModal from "./LoginModal";
 import SignUpModal from "./SignUpModal";
+import useUser from "../lib/useUser";
+import { logOut } from "../api";
 
 export default function Header() {
+  const { userLoading, user, isLoggedIn } = useUser();
   const {
     isOpen: isLoginOpen,
     onClose: onLoginClose,
@@ -30,6 +39,24 @@ export default function Header() {
   const { toggleColorMode } = useColorMode();
   const logoColor = useColorModeValue("red.500", "red.200");
   const Icon = useColorModeValue(FaMoon, FaSun);
+  const toast = useToast();
+  const onLogOut = async () => {
+    const toastId = toast({
+      title: "Login out...",
+      description: "Sad to see you go...",
+      status: "loading",
+      position: "bottom-right",
+    });
+    // const data = await logOut();
+    // console.log(data);
+    setTimeout(() => {
+      toast.update(toastId, {
+        status: "success",
+        title: "Done!",
+        description: "See you later!",
+      });
+    }, 5000);
+  };
 
   return (
     <Stack
@@ -59,12 +86,25 @@ export default function Header() {
           aria-label="Toggle dark mode"
           icon={<Icon />}
         />
-        <Button onClick={onLoginOpen}>Log in</Button>
-        <LightMode>
-          <Button onClick={onSignUpOpen} colorScheme={"red"}>
-            Sign up
-          </Button>
-        </LightMode>
+        {!userLoading && !isLoggedIn ? (
+          <>
+            <Button onClick={onLoginOpen}>Log in</Button>
+            <LightMode>
+              <Button onClick={onSignUpOpen} colorScheme={"red"}>
+                Sign up
+              </Button>
+            </LightMode>
+          </>
+        ) : (
+          <Menu>
+            <MenuButton>
+              <Avatar name={user?.name} src={user?.avatar} size={"md"} />
+            </MenuButton>
+            <MenuList>
+              <MenuItem onClick={onLogOut}>Log out</MenuItem>
+            </MenuList>
+          </Menu>
+        )}
       </HStack>
       <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
       <SignUpModal isOpen={isSignUpOpen} onClose={onSignUpClose} />

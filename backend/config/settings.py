@@ -35,9 +35,10 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    "http://127.0.0.1:3000",
+    'http://127.0.0.1:3000',
 ]
 
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 SYSTEM_APPS = [
@@ -166,6 +167,9 @@ PAGE_SIZE = 3
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "config.authentication.TrustMeBroAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
         "config.authentication.JWTAuthentication",
     ]
 }
