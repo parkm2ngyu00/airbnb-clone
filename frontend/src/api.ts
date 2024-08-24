@@ -1,6 +1,7 @@
 import { QueryFunctionContext } from "@tanstack/react-query";
 import axios, { AxiosRequestConfig } from "axios";
 import { IUser } from "./types";
+import Cookie from "js-cookie";
 
 const instance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/v1/",
@@ -69,4 +70,10 @@ export const getMe = async (): Promise<IUser> => {
 };
 
 export const logOut = () =>
-  instance.post(`users/log-out`).then((response) => response.data);
+  instance
+    .post(`users/log-out`, null, {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+      },
+    })
+    .then((response) => response.data);
